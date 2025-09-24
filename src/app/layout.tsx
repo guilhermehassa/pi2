@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={montserratFont.className}>
+      <body className={`${montserratFont.className} max-w-screen overflow-x-hidden`}>
         {children}
       </body>
     </html>

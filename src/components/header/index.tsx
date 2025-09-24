@@ -13,7 +13,8 @@ export default function Header(){
                 src="/logo.webp"
                 width={60}
                 height={60}
-                className="shadow-lg rounded-full scale-[1.8] translate-x-[40%] translate-y-[30%] relative z-100"
+                quality={100}
+                className="shadow-lg rounded-full scale-[1.6] translate-x-[30%] translate-y-[30%] relative z-100"
                 alt={process.env.STORE_NAME || "Logo"}
               />
             </h1>   
