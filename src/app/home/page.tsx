@@ -1,12 +1,13 @@
 import "swiper/css";
-import Header from "@/components/header";
-import Categories from "@/components/categories";
+import CategoriesSwiper from "@/components/categories";
+import ItemsList from "@/components/itemsList";
 
 export default function Home() {
 
   return (
     <>
-      <Categories />
+      <CategoriesSwiper />
+      <ItemsList />
     </>
   )
 }

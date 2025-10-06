@@ -1,20 +1,9 @@
 "use client"
 import { Swiper, SwiperSlide } from "swiper/react";
+import { categories } from "@/utils/data/categories";
 
-export default function Categories() {
-
-  const categories = [
-    { id: 1, name: "Categoria 1" },
-    { id: 2, name: "Categoria 2" },
-    { id: 3, name: "Categoria 3" },
-    { id: 4, name: "Categoria 4" },
-    { id: 5, name: "Categoria 5" },
-    { id: 6, name: "Categoria 6" },
-    { id: 7, name: "Categoria 7" },
-    { id: 8, name: "Categoria 8" },
-    { id: 9, name: "Categoria 9" },
-    { id: 10, name: "Categoria 10" },
-  ];
+export default function categoriesSwiper() {
+  
   return (
     <div className="container mx-auto px-3 my-10 overflow-hidden">
       <div className="flex justify-between items-center">
