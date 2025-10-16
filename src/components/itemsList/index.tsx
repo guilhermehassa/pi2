@@ -6,9 +6,14 @@ import { categories } from "@/utils/data/categories";
 import { IoMdAdd } from "react-icons/io"
 import { SlSizeFullscreen } from "react-icons/sl"
 import { MdOutlineFormatListBulleted  } from "react-icons/md"
+import { ProductsProps } from "@/utils/types/products";
 import { showInBrazilianValue, getCheaperVariation } from "@/utils/functions/functions";
 
+import { useCart } from "@/contexts/CartContext"; 
+
 export default function itemsList() {
+  const { cart, addToCart, removeFromCart, addVariationToCart, removeVariationFromCart } = useCart(); 
+
   const [openVariations, setOpenVariations] = useState<{ [productId: number]: boolean }>({});
   const [fullImage, setFullImage] = useState<{ [productId: number]: boolean }>({});
   const [zIndexVariations, setZIndexVariations] = useState<{ [productId: number]: number }>({});
@@ -63,6 +68,8 @@ export default function itemsList() {
       }, 100);
     }
   };
+
+
   return (
     <div className="container mx-auto px-3 my-10 overflow-hidden">
       <div className="flex justify-between items-center flex-col">
@@ -72,7 +79,7 @@ export default function itemsList() {
           <div key={category.id} id={`category-${category.id}`} className="mb-10 w-full">
             <h2 className="text-3xl md:text-center lg:text-left font-bold mb-2">{category.name}</h2>
 
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-3 lg:gap-0">
               {products.filter(product => product.categoryId === category.id).map((product) => (
                 <div key={product.id}
                   className="w-full md:w-8/12 lg:w-4/12 lg:p-2 "
@@ -155,7 +162,6 @@ export default function itemsList() {
                               backdropFilter: 'blur(2px)',
                               opacity: openVariations[product.id] ? 1 : 0,
                               zIndex: zIndexVariations[product.id] ?? -1
-                              
                             }}
                             >
                               <div className="container m-3 bg-neutral-100 p-3 rounded-md shadow-lg relative">
@@ -191,16 +197,21 @@ export default function itemsList() {
                                         >
                                         <button
                                           className="flex items-center text-white font-bold justify-center w-9 bg-amber-900"
+                                          onClick={() => (removeVariationFromCart(product, variation.id))}
                                           >
                                           -
                                         </button>
                                         <input
                                           type="text"
-                                          value={0}
+                                          value={
+                                            cart.items.find(cartItem => cartItem.id === variation.id && cartItem.type == 'variation')?.quantity || 0
+                                          }
+                                          disabled
                                           className="w-8 text-center"
                                         />
                                         <button
                                           className="flex items-center text-white font-bold justify-center w-9 py-2 bg-amber-900"
+                                          onClick={() => addVariationToCart({ ...product, quantity: 1 }, variation.id)}
                                           >
                                           <IoMdAdd size={18}/>
                                         </button>
@@ -223,21 +234,25 @@ export default function itemsList() {
                             >
                             <button
                               className="flex items-center text-white font-bold justify-center w-9 bg-amber-900"
+                              onClick={() => removeFromCart(product)}
                               >
                               -
                             </button>
                             <input
-                              type="number"
-                              value={0}
+                              type="text"
+                              value={
+                                cart.items.find(cartItem => cartItem.id === product.id && cartItem.type == 'product')?.quantity || 0
+                              }
+                              disabled
                               className="w-8 text-center"
                             />
                             <button
                               className="flex items-center text-white font-bold justify-center w-9 py-2 bg-amber-900"
+                              onClick={() => addToCart(product)}
                               >
                               <IoMdAdd size={18}/>
                             </button>
                           </div>
-
                         </>
                       )}
                     </div>

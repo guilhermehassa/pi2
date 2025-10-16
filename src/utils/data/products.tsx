@@ -44,7 +44,7 @@ export const products: ProductsProps[] = [
   },
   {
     id: 3,
-    name: "Nhoque",
+    name: "Rondelli",
     categoryId: 4,
     imageUrl: "https://placehold.co/600x400",
     value: 26,

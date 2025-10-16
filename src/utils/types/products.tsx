@@ -9,8 +9,8 @@ export interface ProductsProps {
   variations?: {
     id: number,
     name: string,
-    value: number,
     image?: string
+    value: number,
   }[],
-  value?: number
+  value?: number,
 }

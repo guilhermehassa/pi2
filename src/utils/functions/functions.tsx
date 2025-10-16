@@ -1,5 +1,7 @@
 import { ProductsProps } from "@/utils/types/products"; 
 
+// GENERAL FUNCTIONS
+
 export function showInBrazilianValue(value: number) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -14,3 +16,5 @@ export function getCheaperVariation(product: ProductsProps) {
 
   return showInBrazilianValue(cheaperVariation.value);
 }
+
+// CART FUNCTIONS
