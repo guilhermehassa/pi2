@@ -42,7 +42,7 @@ export default function NavContainer() {
       </button>
       <nav
         className={`
-          absolute z-40 transition-all duration-300 w-[100%] text-2xl bg-neutral-300 text-red-900 p-5 pt-9 top-[-200px] left-0 
+          absolute z-40 transition-all duration-300 w-[100%] text-lg bg-neutral-300 text-red-900 p-5 pt-9 top-[-200px] left-0 
           lg:relative lg:top-[unset] lg:bg-transparent lg:p-0 lg:pt-0
           ${menuOpen && 'top-[85px]'}
           `
@@ -54,6 +54,43 @@ export default function NavContainer() {
           lg:flex-row lg:gap-11 lg:space-y-0.5 lg:justify-end "
           >
           {loggedIn ? (
+            
+            <>
+              <li>
+                <Link
+                  href="/perfil"
+                  className="
+                    flex font-bold py-2 text-center items-center justify-center gap-2
+                    lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
+                  ">
+                  <FaUserCircle />
+                  Minhas Informações
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/login"
+                  className="
+                    flex font-bold py-2 text-center items-center justify-center gap-2
+                    lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
+                  ">
+                  <FaClipboardList />
+                  Meus Pedidos
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/logout"
+                  className="
+                    flex font-bold py-2 text-center items-center justify-center gap-2
+                    lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
+                  ">
+                  <FaSignOutAlt />
+                  Logout
+                </Link>
+              </li>
+            </>
+          ) : (
             <li>
               <Link
                 href="/login"
@@ -65,41 +102,7 @@ export default function NavContainer() {
                 Login
               </Link>
             </li>
-          ) : (
-            <li>
-              <Link
-                href="/logout"
-                className="
-                  flex font-bold py-2 text-center items-center justify-center gap-2
-                  lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
-                ">
-                <FaSignOutAlt />
-                Logout
-              </Link>
-            </li>
           )}
-          <li>
-            <Link
-              href="/perfil"
-              className="
-                flex font-bold py-2 text-center items-center justify-center gap-2
-                lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
-              ">
-              <FaUserCircle />
-              Minhas Informações
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/login"
-              className="
-                flex font-bold py-2 text-center items-center justify-center gap-2
-                lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
-              ">
-              <FaClipboardList />
-              Meus Pedidos
-            </Link>
-          </li>
         </ul>
       </nav>
     </>

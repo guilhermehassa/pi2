@@ -46,15 +46,13 @@ export const clearCart = (): void => {
 
 export const addToCart = (item: CartItem): void => {
   const currentCart = getCart();
-  
   // Pesquisa e obtem o index do item no carrinho baseado no id e type
   const existingItemIndex = currentCart.items.findIndex(currentProduct => currentProduct.id === item.id && currentProduct.type === item.type);
   
   if (existingItemIndex > -1) {
     // Atualiza a quantidade se o item já existir
-    currentCart.items[existingItemIndex].quantity && (
-      currentCart.items[existingItemIndex].quantity += item.quantity || 0
-    )
+    currentCart.items[existingItemIndex].quantity! += 1;
+    
   } else {
     // Adiciona novo item
     item.quantity = 1;

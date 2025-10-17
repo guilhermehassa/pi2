@@ -4,10 +4,12 @@ import { CartProps, CartItem } from "@/utils/types/cart";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getCart, addToCart, removeFromCart } from '@/utils/cart/cart';
-import { setTimeout } from "timers";
+import CartButton from "@/components/cartButton";
 
 interface CartContextType {
   cart: CartProps;
+  cartTotal?: number;
+  itemCount?: number;
   addToCart: (item: CartItem) => void;
   removeFromCart: (item: CartItem) => void;
   addVariationToCart: (product: CartItem, variationId: number) => void;
@@ -24,6 +26,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Carrega o carrinho do localStorage quando o componente é montado
   useEffect(() => {
     const loadedCart = getCart();
+    const count = loadedCart.items.reduce((sum, cartItem) => sum + cartItem.quantity!, 0);
+    setItemCount(count);
+    const total = loadedCart.items.reduce((sum, cartItem) => sum + ((cartItem.value || 0) * cartItem.quantity!), 0);
+    setCartTotal(total);
 
     // SetCart Salva o carrinho no estado
     setCart(loadedCart);
@@ -37,13 +43,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     // Atualiza o carrinho no localStorage
     addToCart(item);
-    
     let updatedCart = getCart();
 
     // Atualiza o total de itens e o valor total 
     const count = updatedCart.items.reduce((sum, cartItem) => sum + cartItem.quantity!, 0);
     setItemCount(count);
-
     const total = updatedCart.items.reduce((sum, cartItem) => sum + ((cartItem.value || 0) * cartItem.quantity!), 0);
     setCartTotal(total);
 
@@ -115,8 +119,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       removeFromCart: handleRemoveFromCart,
       addVariationToCart: handleAddVariationToCart,
       removeVariationFromCart: handleRemoveVariationFromCart,
+      itemCount,
+      cartTotal
     }}>
       {children}
+      <CartButton />
     </CartContext.Provider>
   );
 };
