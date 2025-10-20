@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
-import "./globals.css";
+import Header from "@/components/header";
 
 export const metadata: Metadata = {
   title: "Cardapio Digital - Rayolli Rotisserie",
   description: "Cardapio digital da Rayolli Rotisserie",
 };
 
-const montserratFont = Montserrat({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -15,10 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br">
-      <body className={`${montserratFont.className} max-w-screen overflow-x-hidden`}>
+    <>
+      <Header />
+      <div className="mt-[120px] min-h-[calc(100vh-120px)]">
         {children}
-      </body>
-    </html>
+      </div>
+    </>
   );
 }
