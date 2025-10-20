@@ -1,6 +1,7 @@
 "use client"
 import { Swiper, SwiperSlide } from "swiper/react";
 import { categories } from "@/utils/data/categories";
+import "./categories.css"; 
 
 export default function categoriesSwiper() {
   
@@ -16,7 +17,7 @@ export default function categoriesSwiper() {
           {categories.map((category) => (
             <SwiperSlide
               key={category.id}
-              className="bg-neutral-200 p-2 px-4 rounded-2xl w-fit shadow"
+              className="bg-neutral-200 p-2 px-4 rounded-2xl shadow custom-swiper-slide"
               style={{width:'fit-content !important'}}
               >
               <a href={`#category-${category.id}`} className="text-red-900 font-medium whitespace-nowrap">
