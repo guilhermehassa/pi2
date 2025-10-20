@@ -69,7 +69,6 @@ export default function itemsList() {
     }
   };
 
-
   return (
     <div className="container mx-auto px-3 my-10 overflow-hidden">
       <div className="flex justify-between items-center flex-col">
@@ -115,7 +114,7 @@ export default function itemsList() {
                         >
                           <div className="container  m-3">
                             <button
-                              className="fixed top-3 right-3 text-white rounded-md aspect-square w-12 bg-red-500 hover:bg-red-800 transition-all flex justify-center items-center"
+                              className="fixed z-40 top-3 right-3 text-white rounded-md aspect-square w-12 bg-red-500 hover:bg-red-800 transition-all flex justify-center items-center"
                               onClick={() => toggleImage(product.id)}
                               >
                               X
