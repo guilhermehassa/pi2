@@ -19,7 +19,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${montserratFont.className} max-w-screen overflow-x-hidden`}>
         <Header />
-        {children}
+        <div className="mt-[120px]">
+          {children}
+        </div>
       </body>
     </html>
   );

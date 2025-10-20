@@ -2,7 +2,7 @@ export default function LoginForm() {
 
   return(
     <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 flex flex-col gap-6">
-      <h1 className="text-3xl font-bold text-center text-blue-700 mb-2">
+      <h1 className="text-3xl font-bold text-center text-amber-900 mb-2">
         Login
       </h1>
       <p className="text-center text-gray-500 mb-4">
@@ -31,14 +31,14 @@ export default function LoginForm() {
         </div>
         <button
           type="submit"
-          className="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+          className="w-full py-2 bg-amber-900 text-white font-semibold rounded-lg hover:bg-amber-700 transition-colors shadow-md"
         >
           Entrar
         </button>
       </form>
       <div className="flex justify-between items-center mt-2 text-sm">
-        <a href="#" className="text-blue-500 hover:underline">Esqueceu a senha?</a>
-        <a href="#" className="text-blue-500 hover:underline">Criar conta</a>
+        <a href="#" className="text-amber-700 hover:underline">Esqueceu a senha?</a>
+        <a href="#" className="text-amber-700 hover:underline">Criar conta</a>
       </div>
     </div>
   )
