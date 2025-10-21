@@ -1,24 +1,25 @@
 import { CategoriesProps } from "@/utils/types/categories";
+import {db} from "@/services/firebaseConnection";
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 
-export const categories: CategoriesProps[] = [
-  {
-    id: 1,
-    order: 3,
-    name: "Variedades"
-  },
-  { 
-    id: 2,
-    order: 2,
-    name: "Salgados Festa"
-  },
-  {
-    id: 3,
-    order: 2,
-    name: "Salgados Lanche"
-  },
-  {
-    id: 4,
-    order: 1,
-    name: "Massas"
-  },
-];
+export async function categories() {
+  const categoriesRef = collection(db, `categorias`);
+  const q = query(
+    categoriesRef,
+    orderBy('order', 'desc'),
+  );
+
+  try {
+    const snapshot = await getDocs(q);
+    const categories = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      name: doc.data().name,
+      order: doc.data().order,
+    }));
+
+    return categories;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}

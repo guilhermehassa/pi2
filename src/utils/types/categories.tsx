@@ -1,7 +1,6 @@
 export interface CategoriesProps {
-  id: number,
+  id: string,
   name: string,
   order?: number,
   image?: string
-  description?: string
 }
