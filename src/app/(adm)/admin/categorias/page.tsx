@@ -7,7 +7,7 @@ import { CategoriesProps } from '@/utils/types/categories';
 import { categories } from '@/utils/data/categories';
 
 import { db } from '@/services/firebaseConnection';
-import { collection, addDoc, query, orderBy, where, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 
 export default function CategoriasPage() {
@@ -24,8 +24,6 @@ export default function CategoriasPage() {
     async function fetchCategories() {
       const fetchedCategories = await categories();
       setCategorias(fetchedCategories);
-
-      console.log('Fetched categories:', categorias);
     }
 
     fetchCategories();

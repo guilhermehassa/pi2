@@ -1,4 +1,6 @@
 import { ProductsProps } from "@/utils/types/products"; 
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/services/firebaseConnection";
 
 // GENERAL FUNCTIONS
 
@@ -18,3 +20,15 @@ export function getCheaperVariation(product: ProductsProps) {
 }
 
 // CART FUNCTIONS
+
+export async function uploadImage(file: File, folder: string): Promise<string> {
+  try {
+    const storageRef = ref(storage, `${folder}/${file.name}`);
+    const snapshot = await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(snapshot.ref);
+    return url;
+  } catch (error) {
+    console.error("Erro ao fazer upload da imagem:", error);
+    throw error;
+  }
+}
