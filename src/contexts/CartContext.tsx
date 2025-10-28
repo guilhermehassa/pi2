@@ -80,7 +80,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const variation = product.variations?.find(v => v.id === variationId);
     if (variation) {
       handleAddToCart({
-        id: variation.id,
+        id: variation.id.toString(),
         productId: product.id,
         type: 'variation',
         name: `${product.name} - ${variation.name}`,
@@ -89,6 +89,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         value: variation.value,
         quantity: 1,
         description: product.description,
+        hasVariations: product.hasVariations,
+        status: product.status
       });
     }
   };
@@ -98,7 +100,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     
     if (variation) {
       handleRemoveFromCart({
-        id: variation.id,
+        id: variation.id.toString(),
         productId: product.id,
         type: 'variation',
         name: `${product.name} - ${variation.name}`,
@@ -107,6 +109,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         value: variation.value,
         quantity: 1,
         description: product.description,
+        hasVariations: product.hasVariations,
+        status: product.status
       });
     }
 

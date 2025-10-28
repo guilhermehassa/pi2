@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { products} from "@/utils/data/products";
-import { categories } from "@/utils/data/categories";
+import { categories as fetchCategories } from "@/utils/data/categories";
 import { IoMdAdd } from "react-icons/io"
 import { SlSizeFullscreen } from "react-icons/sl"
 import { MdOutlineFormatListBulleted  } from "react-icons/md"
@@ -12,14 +12,29 @@ import { showInBrazilianValue, getCheaperVariation } from "@/utils/functions/fun
 import { useCart } from "@/contexts/CartContext"; 
 
 export default function itemsList() {
-  const { cart, addToCart, removeFromCart, addVariationToCart, removeVariationFromCart } = useCart(); 
+  const { cart, addToCart, removeFromCart, addVariationToCart, removeVariationFromCart } = useCart();
 
-  const [openVariations, setOpenVariations] = useState<{ [productId: number]: boolean }>({});
-  const [fullImage, setFullImage] = useState<{ [productId: number]: boolean }>({});
-  const [zIndexVariations, setZIndexVariations] = useState<{ [productId: number]: number }>({});
-  const [zIndexFullImage, setZIndexFullImage] = useState<{ [productId: number]: number }>({});
+  const [categories, setCategories] = useState<{ id: string; name: any; order: any }[]>([]);
+  const [produtos, setProducts] = useState<ProductsProps[]>([]);
 
-  const toggleVariations = (productId: number) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedCategories = await fetchCategories();
+      setCategories(fetchedCategories);
+
+      const fetchedProducts = await products();
+      setProducts(fetchedProducts);
+      
+    };
+    fetchData();
+  }, []);
+
+  const [openVariations, setOpenVariations] = useState<{ [productId: string]: boolean }>({});
+  const [fullImage, setFullImage] = useState<{ [productId: string]: boolean }>({});
+  const [zIndexVariations, setZIndexVariations] = useState<{ [productId: string]: number }>({});
+  const [zIndexFullImage, setZIndexFullImage] = useState<{ [productId: string]: number }>({});
+
+  const toggleVariations = (productId: string) => {
 
     if(zIndexVariations[productId] === 101){
       setTimeout(() => {
@@ -43,7 +58,7 @@ export default function itemsList() {
     }, 100);
   };
 
-  const toggleImage = (productId: number) => {
+  const toggleImage = (productId: string) => {
     if (fullImage[productId]) {
       setFullImage(prev => ({
         ...prev,
@@ -79,7 +94,7 @@ export default function itemsList() {
             <h2 className="text-3xl md:text-center lg:text-left font-bold mb-2">{category.name}</h2>
 
             <div className="flex flex-wrap justify-center gap-3 lg:gap-0">
-              {products.filter(product => product.categoryId === category.id).map((product) => (
+              {produtos.filter(product => product.categoryId === category.id).map((product) => (
                 <div key={product.id}
                   className="w-full md:w-8/12 lg:w-4/12 lg:p-2 "
                   >
@@ -203,7 +218,7 @@ export default function itemsList() {
                                         <input
                                           type="text"
                                           value={
-                                            cart.items.find(cartItem => cartItem.id === variation.id && cartItem.type == 'variation')?.quantity || 0
+                                            cart.items.find(cartItem => String(cartItem.id) === String(variation.id) && cartItem.type == 'variation')?.quantity || 0
                                           }
                                           disabled
                                           className="w-8 text-center"
