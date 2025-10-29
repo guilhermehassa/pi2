@@ -28,7 +28,9 @@ export default function categoriesSwiper() {
           spaceBetween={15}
           style={{ overflow: 'visible' }}
           >
-          {categorias.map((category) => (
+          {[...categorias]
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((category) => (
             <SwiperSlide
               key={category.id}
               className="bg-neutral-200 p-2 px-4 rounded-2xl shadow custom-swiper-slide"

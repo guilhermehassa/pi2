@@ -105,46 +105,55 @@ export default function itemsList() {
                       className="relative w-4/12 p-3 aspect-square cursor-pointer"
                       onClick={() => toggleImage(product.id)}
                       >
-                      <Image
-                        width="500"
-                        height="500"
-                        unoptimized={true}
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="object-cover rounded-md h-full object-center"
-                      />
-                      <SlSizeFullscreen
-                        size={24}
-                        className="absolute bottom-3 right-3 text-white bg-amber-900 rounded-md p-1 cursor-pointer shadow-md"
-                      />
+                      {product.imageUrl ? (
+                        <>
+                          <Image
+                            width="500"
+                            height="500"
+                            unoptimized={true}
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="object-cover rounded-md h-full object-center"
+                          />
+                          <SlSizeFullscreen
+                            size={24}
+                            className="absolute bottom-3 right-3 text-white bg-amber-900 rounded-md p-1 cursor-pointer shadow-md"
+                          />
 
-                      <div
-                        className="fixed top-0 left-0 flex w-full h-full justify-center items-center transition-opacity duration-300 "
-                        style={{
-                          background: 'rgba(0, 0, 0, 0.6)',
-                          backdropFilter: 'blur(2px)',
-                          opacity: fullImage[product.id] ? 1 : 0,
-                          zIndex: zIndexFullImage[product.id] ?? -1
-                        }}
-                        >
-                          <div className="container  m-3">
-                            <button
-                              className="fixed z-40 top-3 right-3 text-white rounded-md aspect-square w-12 bg-red-500 hover:bg-red-800 transition-all flex justify-center items-center"
-                              onClick={() => toggleImage(product.id)}
-                              >
-                              X
-                            </button>
-                            <div className="relative w-full h-screen">
-                              <Image
-                                fill={true}
-                                unoptimized={true}
-                                src={product.imageUrl}
-                                alt={product.name}
-                                className="object-contain"
-                              />
-                            </div>
+                          <div
+                            className="fixed top-0 left-0 flex w-full h-full justify-center items-center transition-opacity duration-300 "
+                            style={{
+                              background: 'rgba(0, 0, 0, 0.6)',
+                              backdropFilter: 'blur(2px)',
+                              opacity: fullImage[product.id] ? 1 : 0,
+                              zIndex: zIndexFullImage[product.id] ?? -1
+                            }}
+                            >
+                              <div className="container  m-3">
+                                <button
+                                  className="fixed z-40 top-3 right-3 text-white rounded-md aspect-square w-12 bg-red-500 hover:bg-red-800 transition-all flex justify-center items-center"
+                                  onClick={() => toggleImage(product.id)}
+                                  >
+                                  X
+                                </button>
+                                <div className="relative w-full h-screen">
+                                  <Image
+                                    fill={true}
+                                    unoptimized={true}
+                                    src={product.imageUrl}
+                                    alt={product.name}
+                                    className="object-contain"
+                                  />
+                                </div>
+                              </div>
                           </div>
-                      </div>
+                        </>  
+                      ) : (
+                        <div className="flex justify-center items-center w-full h-full bg-neutral-200 rounded-md">
+                          <span className="text-gray-500">Sem imagem</span>
+                        </div>
+                      )}
+  
                     </div>
                     <div
                       className="py-3 pr-3 w-8/12 flex flex-col justify-between align-middle gap-3 relative"
@@ -155,7 +164,7 @@ export default function itemsList() {
                         {product.name}
                       </h3>
                       
-                      {product.variations ? (
+                      {product.hasVariations ? (
                         <>
                           <p className="text-lg font-bold">
                             A partir de {getCheaperVariation(product)}
@@ -188,7 +197,7 @@ export default function itemsList() {
                                 <h3 className="text-xl font-bold mb-3 text-amber-900">
                                   <span className="">{product.variationPluralName}</span>
                                 </h3>
-                                {product.variations.map(variation => (
+                                {product.variations!.map(variation => (
                                   <div key={variation.id} className="flex justify-between items-center not-last-of-type:border-b border-neutral-300 p-2">
                                     <div className="flex items-center gap-3">
                                       {variation.image && (
