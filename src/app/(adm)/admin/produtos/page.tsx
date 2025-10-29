@@ -59,7 +59,6 @@ export default function ProdutosPage() {
           .split('/o/')[1]
           .split('?')[0]
       );
-      console.log(fullPath)
 
       // Criar referência ao arquivo
       const fileRef = ref(storage, fullPath);
@@ -109,10 +108,12 @@ export default function ProdutosPage() {
         categoryId: produtoParaSalvar.categoryId,
         description: produtoParaSalvar.description || '',
         hasVariations: produtoParaSalvar.hasVariations,
-        variations: produtoParaSalvar.variations || [],
         value: produtoParaSalvar.value || 0,
         imageUrl: '',
         status: produtoParaSalvar.status,
+        variationPluralName: produtoParaSalvar.variationPluralName || '',
+        variationSingularName: produtoParaSalvar.variationSingularName || '',
+        variations: produtoParaSalvar.variations || [],
       });
 
       // Atualizar imagem principal com o ID do produto
@@ -256,15 +257,24 @@ export default function ProdutosPage() {
 
     try {
       const produtoRef = doc(db, 'produtos', produtoEditar.id);
-      await updateDoc(produtoRef, {
+
+      const produtoAtualizado = {
         name: produtoEditar.name,
         categoryId: produtoEditar.categoryId,
         description: produtoEditar.description || '',
-        hasVariations: produtoEditar.hasVariations,
-        variations: produtoEditar.variations || [],
-        value: produtoEditar.value,
+        value: produtoEditar.value !== undefined ? produtoEditar.value : null,
         status: produtoEditar.status,
-      });
+        hasVariations: produtoEditar.hasVariations,
+        variationPluralName: produtoEditar.variationPluralName || '',
+        variationSingularName: produtoEditar.variationSingularName || '',
+        variations: produtoEditar.variations?.map(variation => ({
+          ...variation,
+          image: variation.image !== undefined ? variation.image : null, // Garantir que image não seja undefined
+        })) || [],
+      };
+
+      await updateDoc(produtoRef, produtoAtualizado);
+
       setProdutos(produtos!.map(produto => produto.id === produtoEditar.id ? produtoEditar : produto));
       setProdutosFiltrados(produtosFiltrados!.map(produto => produto.id === produtoEditar.id ? produtoEditar : produto));
       setModalEditarProduto(false);
@@ -459,6 +469,25 @@ export default function ProdutosPage() {
           {novoProduto.hasVariations && (
             <div>
               <label className="block text-2xl font-bold text-gray-900 border-t-2 pt-2 mb-1">Variações</label>
+              <div className='inline-block my-3 mr-5'>
+                <h3>Nome da Variação (plural)</h3>
+                <input
+                  type="text"
+                  placeholder='EX: Sabores'
+                  className="my-1 border border-gray-300 rounded-md px-2 py-1 mr-2"
+                  onChange={(e) => setNovoProduto({ ...novoProduto, variationPluralName: e.target.value })}
+                  />
+              </div>
+
+              <div className='inline-block my-3'>
+                <h3>Nome da Variação(singular)</h3>
+                <input
+                  type="text"
+                  placeholder='EX: Sabor'
+                  className="my-1 border border-gray-300 rounded-md px-2 py-1 mr-2"
+                  onChange={(e) => setNovoProduto({ ...novoProduto, variationSingularName: e.target.value })}
+                  />
+              </div>
               <ul>
                 {novoProduto.variations && novoProduto.variations.map((variacao, index) => (
                   <li key={index} className='flex flex-wrap justify-between mb-4 border-b-2 pb-2'>
@@ -562,7 +591,7 @@ export default function ProdutosPage() {
               >
                 <option value="">Selecione uma categoria</option>
                 {categorias.map((categoria) => (
-                  <option key={categoria.id} value={categoria.id}>
+                  <option key={categoria.id} value={categoria.id} selected={produtoEditar.categoryId === categoria.id}>
                     {categoria.name}
                   </option>
                 ))}
@@ -574,7 +603,9 @@ export default function ProdutosPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 onChange={(e) => setProdutoEditar({ ...produtoEditar, description: e.target.value })}
                 style={{resize: 'none'}}
-              />
+              >
+                {produtoEditar.description}
+              </textarea>
             </div>
             
             <div>
@@ -669,6 +700,27 @@ export default function ProdutosPage() {
           {produtoEditar.hasVariations && (
             <div>
               <label className="block text-2xl font-bold text-gray-900 border-t-2 pt-2 mb-1">Variações</label>
+              <div className='inline-block my-3 mr-5'>
+                <h3>Nome da Variação (plural)</h3>
+                <input
+                  type="text"
+                  placeholder='EX: Sabores'
+                  className="my-1 border border-gray-300 rounded-md px-2 py-1 mr-2"
+                  value={produtoEditar.variationPluralName || ''}
+                  onChange={(e) => setProdutoEditar({ ...produtoEditar, variationPluralName: e.target.value })}
+                  />
+              </div>
+
+              <div className='inline-block my-3'>
+                <h3>Nome da Variação(singular)</h3>
+                <input
+                  type="text"
+                  placeholder='EX: Sabor'
+                  className="my-1 border border-gray-300 rounded-md px-2 py-1 mr-2"
+                  value={produtoEditar.variationSingularName || ''}
+                  onChange={(e) => setProdutoEditar({ ...produtoEditar, variationSingularName: e.target.value })}
+                  />
+              </div>
               <ul>
                 {produtoEditar.variations && produtoEditar.variations.map((variacao, index) => (
                   <li key={index} className='flex flex-wrap justify-between mb-4 border-b-2 pb-2'>
