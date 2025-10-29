@@ -352,7 +352,7 @@ export default function ProdutosPage() {
 
       {modalNovoProduto && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Nova Categoria</h2>
+          <h2 className="text-xl font-semibold mb-4">Novo Produto</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
@@ -444,7 +444,7 @@ export default function ProdutosPage() {
               </label>
             </div>
             
-            {!novoProduto.hasVariations ? (
+            {!novoProduto.hasVariations && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Preço</label>
                 <input
@@ -454,12 +454,16 @@ export default function ProdutosPage() {
                   onChange={(e) => setNovoProduto({ ...novoProduto, value: Number(e.target.value) })}
                 />
               </div>
-            ) : (
-              <div>
-                <label className="block text-lg font-medium text-gray-700 mb-1">Variações</label>
-                <ul>
-                  {novoProduto.variations && novoProduto.variations.map((variacao, index) => (
-                    <li key={index}>
+            )} 
+          </div>
+          {novoProduto.hasVariations && (
+            <div>
+              <label className="block text-2xl font-bold text-gray-900 border-t-2 pt-2 mb-1">Variações</label>
+              <ul>
+                {novoProduto.variations && novoProduto.variations.map((variacao, index) => (
+                  <li key={index} className='flex flex-wrap justify-between mb-4 border-b-2 pb-2'>
+                    <div className='flex flex-col w-[100%] lg:w-[48%]'>
+                      <h3>Nome</h3>
                       <input
                         type="text"
                         placeholder="Nome"
@@ -471,6 +475,7 @@ export default function ProdutosPage() {
                           setNovoProduto({ ...novoProduto, variations: novasVariacoes });
                         }}
                       />
+                      <h3>Preço</h3>
                       <input
                         type="number"
                         className="border border-gray-300 rounded-md px-2 py-1 mr-2 mb-2"
@@ -482,6 +487,8 @@ export default function ProdutosPage() {
                           setNovoProduto({ ...novoProduto, variations: novasVariacoes });
                         }}
                         />
+                    </div>
+                    <div className='w-[100%] lg:w-[48%]'>
                       <input 
                         type="file"
                         id={`variationImage-${index}`}
@@ -499,30 +506,28 @@ export default function ProdutosPage() {
                           }
                         }}
                       />
-                    </li>
-                  ))}
-                </ul>
-                <button 
-                  className="bg-amber-900 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-amber-700"
-                  onClick={() => {
-                    const novasVariacoes = novoProduto.variations ? [...novoProduto.variations] : [];
-                    const novoId = novasVariacoes.length > 0 ? novasVariacoes[novasVariacoes.length - 1].id + 1 : 1;
-                    novasVariacoes.push({ ...defaultVariation, id: novoId });
-                    setNovoProduto({ ...novoProduto, variations: novasVariacoes });
-                  }}
-                >
-                  <FiPlus /> Adicionar Variação
-                </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <button 
+                className="bg-amber-900 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-amber-700"
+                onClick={() => {
+                  const novasVariacoes = novoProduto.variations ? [...novoProduto.variations] : [];
+                  const novoId = novasVariacoes.length > 0 ? novasVariacoes[novasVariacoes.length - 1].id + 1 : 1;
+                  novasVariacoes.push({ ...defaultVariation, id: novoId });
+                  setNovoProduto({ ...novoProduto, variations: novasVariacoes });
+                }}
+              >
+                <FiPlus /> Adicionar Variação
+              </button>
 
-              </div>
-            )}
-            
-            
-          </div>
+            </div>
+          )}
           <div className="flex justify-end gap-3">
             <button 
               className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-              onClick={() => setModalNovoProduto(false)}
+              onClick={() => {setModalNovoProduto(false), setNovoProduto(defaultProduct)}}
             >
               Cancelar
             </button>
@@ -659,7 +664,6 @@ export default function ProdutosPage() {
                 />
               </div>
             )}
-            
             
           </div>
           {produtoEditar.hasVariations && (
