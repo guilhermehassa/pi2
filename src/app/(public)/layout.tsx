@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Header from "@/components/header";
+import { CartProvider } from "@/contexts/CartContext";
 
 export const metadata: Metadata = {
   title: "Cardapio Digital - Rayolli Rotisserie",
@@ -16,7 +17,9 @@ export default function RootLayout({
     <>
       <Header />
       <div className="mt-[120px] min-h-[calc(100vh-120px)]">
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </div>
     </>
   );
