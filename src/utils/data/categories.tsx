@@ -23,3 +23,23 @@ export async function categories() {
     return [];
   }
 }
+
+export async function getCategoryNameById(categoryId: string): Promise<string | null> {
+  const categoriesRef = collection(db, 'categorias');
+  const q = query(
+    categoriesRef,
+    orderBy('order', 'desc'),
+  );
+  try {
+    const snapshot = await getDocs(q);
+    for (const doc of snapshot.docs) {
+      if (doc.id === categoryId) {
+        return doc.data().name || null;
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching category name:', error);
+    return null;
+  }
+}
