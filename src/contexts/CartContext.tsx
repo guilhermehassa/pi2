@@ -37,7 +37,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const handleAddToCart = (item: CartItem) => {
     
-    // Se chegar até aqui sem um type definido significa que é uma variação
+    // Se chegar até aqui sem um type definido significa que não é uma variação
     if(!item.type) {
       item.type = 'product';
     }
@@ -80,7 +80,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const variation = product.variations?.find(v => v.id === variationId);
     if (variation) {
       handleAddToCart({
-        id: variation.id.toString(),
+        id: `${product.id} - ${variation.id.toString()}`,
         productId: product.id,
         type: 'variation',
         name: `${product.name} - ${variation.name}`,

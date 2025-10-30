@@ -227,7 +227,7 @@ export default function itemsList() {
                                         <input
                                           type="text"
                                           value={
-                                            cart.items.find(cartItem => String(cartItem.id) === String(variation.id) && cartItem.type == 'variation')?.quantity || 0
+                                            cart.items.find(cartItem => String(cartItem.id) === (`${product.id} - ${String(variation.id)}`) && cartItem.type == 'variation')?.quantity || 0
                                           }
                                           disabled
                                           className="w-8 text-center"
