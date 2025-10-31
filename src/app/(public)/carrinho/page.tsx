@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import { OpcaoEntrega } from '@/utils/types/delivery';
 import { IoMdAdd } from 'react-icons/io';
@@ -10,7 +9,6 @@ import { SlSizeFullscreen } from 'react-icons/sl';
 import { showInBrazilianValue } from '@/utils/functions/functions';
 
 export default function Cart() {
-  // const router = useRouter();
   const { cart, cartTotal, addToCart, removeFromCart } = useCart();
   const [formData, setFormData] = useState({
     name: '',
@@ -21,7 +19,6 @@ export default function Cart() {
   });
 
   const [fullImage, setFullImage] = useState<{ [productId: string]: boolean }>({});
-  const [zIndexVariations, setZIndexVariations] = useState<{ [productId: string]: number }>({});
   const [zIndexFullImage, setZIndexFullImage] = useState<{ [productId: string]: number }>({});
   const toggleImage = (productId: string) => {
     if (fullImage[productId]) {
@@ -111,7 +108,10 @@ export default function Cart() {
           {cart.items.map((product) => (
             <div key={`${product.id}-${product.type}`} className="flex items-center justify-between p-4 bg-white rounded-lg shadow relative">
               <div className="flex items-center space-x-4">
-                <div className="relative w-4/12 p-3 aspect-square cursor-pointer">
+                <div
+                  className="relative w-4/12 p-3 aspect-square cursor-pointer"
+                  onClick={() => toggleImage(product.id)}
+                  >
                   {product.imageUrl ? (
                     <>
                       <Image
