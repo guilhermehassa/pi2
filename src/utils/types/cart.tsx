@@ -9,4 +9,6 @@ export interface CartItem extends ProductsProps {
 export interface CartProps {
   items: CartItem[];
   expiresAt: number; 
+  createdAt?: string;
+  status?: 'solicitado' | 'produzindo' | 'em entrega' | 'finalizado';
 }

@@ -5,6 +5,8 @@ import { collection, query, orderBy, getDocs, addDoc } from 'firebase/firestore'
 export async function registerOrder(cart: CartProps) {
   
   try{
+    cart.createdAt = new Date().toISOString();
+    cart.status = 'solicitado';
     const addedCart = await addDoc(collection(db, 'carts'), cart);
     return { Response: 'Success', cart: addedCart };
 
