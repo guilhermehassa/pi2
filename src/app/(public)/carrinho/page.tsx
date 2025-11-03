@@ -179,7 +179,7 @@ export default function Cart() {
                 <input
                   type="text"
                   value={
-                    cart.items.find(cartItem => cartItem.id === product.id && cartItem.type == 'product')?.quantity || 0
+                    cart.items.find(cartItem => cartItem.id === product.id)?.quantity || 0
                   }
                   disabled
                   className="w-8 text-center"
