@@ -7,6 +7,7 @@ import { IoMdAdd } from 'react-icons/io';
 import Image from 'next/image';
 import { SlSizeFullscreen } from 'react-icons/sl';
 import { showInBrazilianValue } from '@/utils/functions/functions';
+import { clearCart } from '@/utils/cart/cart';
 
 export default function Cart() {
   const { cart, cartTotal, addToCart, removeFromCart } = useCart();
@@ -14,7 +15,13 @@ export default function Cart() {
     name: '',
     address: '',
     phone: '',
-    deliveryMethod: '',
+    deliveryMethod: {
+      id: '',
+      nome: "",
+      taxa: 0,
+      tempoEstimado: "",
+      status: true
+    },
     observations: ''
   });
 
@@ -86,15 +93,37 @@ export default function Cart() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Será implementado na próxima etapa
-    console.log('Dados do pedido:', { items: cart.items, ...formData, total: cartTotal });
+
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          ...formData, 
+          ...cart, 
+        })
+      });
+
+      const data = await response.json();
+      if(data.error) {
+        alert(`Erro ao enviar pedido: ${data.error}`);
+        return;
+      }
+      alert('Pedido enviado com sucesso!');
+      clearCart();
+      window.location.href = '/';
+
+    } catch (error) {
+      console.error('Erro ao enviar pedido:', error);
+    }
   };
 
   function sumCarPlusDelivery() {
-    const deliveryTax = parseFloat(formData.deliveryMethod || '0');
-    const totalWithDelivery = (cartTotal || 0) + deliveryTax;
+    const totalWithDelivery = (cartTotal || 0) + (formData.deliveryMethod.taxa || 0);
     return showInBrazilianValue(totalWithDelivery);
   }
 
@@ -257,11 +286,11 @@ export default function Cart() {
               <select
                 id="deliveryMethod"
                 name="deliveryMethod"
-                value={formData.deliveryMethod}
+                value={formData.deliveryMethod.id}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    deliveryMethod: e.target.value
+                    deliveryMethod: deliveries.find(option => option.id === e.target.value) || prev.deliveryMethod
                   }))
                 }
                 required
@@ -270,7 +299,7 @@ export default function Cart() {
                 <option value="">Selecione um método de entrega</option>
                 {deliveries && 
                   deliveries.map((option) => (
-                    <option key={option.id} value={option.taxa}>
+                    <option key={option.id} value={option.id}>
                       {option.nome} - {showInBrazilianValue(option.taxa)} ({option.tempoEstimado})
                     </option>
                   ))

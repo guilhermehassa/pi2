@@ -1,6 +1,7 @@
 "use client";
 
 import { CartProps, CartItem } from "@/utils/types/cart";
+import { OpcaoEntrega } from "@/utils/types/delivery";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getCart, addToCart, removeFromCart } from '@/utils/cart/cart';
@@ -10,6 +11,7 @@ interface CartContextType {
   cart: CartProps;
   cartTotal?: number;
   itemCount?: number;
+  deliveryMethod?: OpcaoEntrega;
   addToCart: (item: CartItem) => void;
   removeFromCart: (item: CartItem) => void;
   addVariationToCart: (product: CartItem, variationId: number) => void;
