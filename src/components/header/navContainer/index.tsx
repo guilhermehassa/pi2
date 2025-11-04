@@ -1,11 +1,21 @@
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import { FaSignInAlt, FaSignOutAlt, FaUserCircle, FaClipboardList } from "react-icons/fa";
+import { UserProps } from "@/utils/types/users";
 
 export default function NavContainer() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState<UserProps | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      setUser(JSON.parse(userStr));
+    }
+  }, []);
   return (
     <>
       <button
@@ -53,41 +63,60 @@ export default function NavContainer() {
           flex flex-col space-y-3
           lg:flex-row lg:gap-11 lg:space-y-0.5 lg:justify-end "
           >
-          {loggedIn ? (
-            
+          {user ? (
             <>
+              {user.role === 'admin' ? (
+                <li>
+                  <Link
+                    href="/admin"
+                    className="
+                      flex font-bold py-2 text-center items-center justify-center gap-2
+                      lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
+                    ">
+                    <FaUserCircle />
+                    Painel Admin
+                  </Link>
+                </li>
+              ) : (
+                <>
+                  <li>
+                    <Link
+                      href="/perfil"
+                      className="
+                        flex font-bold py-2 text-center items-center justify-center gap-2
+                        lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
+                      ">
+                      <FaUserCircle />
+                      Minhas Informações
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/meus-pedidos"
+                      className="
+                        flex font-bold py-2 text-center items-center justify-center gap-2
+                        lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
+                      ">
+                      <FaClipboardList />
+                      Meus Pedidos
+                    </Link>
+                  </li>
+                </>
+              )}
               <li>
-                <Link
-                  href="/perfil"
-                  className="
-                    flex font-bold py-2 text-center items-center justify-center gap-2
-                    lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
-                  ">
-                  <FaUserCircle />
-                  Minhas Informações
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/login"
-                  className="
-                    flex font-bold py-2 text-center items-center justify-center gap-2
-                    lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
-                  ">
-                  <FaClipboardList />
-                  Meus Pedidos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/logout"
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('user');
+                    setUser(null);
+                    router.push('/login');
+                  }}
                   className="
                     flex font-bold py-2 text-center items-center justify-center gap-2
                     lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
                   ">
                   <FaSignOutAlt />
                   Logout
-                </Link>
+                </button>
               </li>
             </>
           ) : (
