@@ -31,16 +31,19 @@ export async function authenticateUser({ user, password }: LoginFormData): Promi
 }
 
 export async function getLoggedInUser(): Promise<UserProps | null> {
-  const userStr = localStorage.getItem('user');
-  if(userStr){
-    console.log(userStr)
-
-    return userStr ? JSON.parse(userStr) as UserProps : null;
-  }
-  else{
-    console.log('error');
+  if (typeof window === 'undefined') {
     return null;
   }
 
-  return null;
+  try {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      return null;
+    }
+
+    return JSON.parse(userStr) as UserProps;
+  } catch (error) {
+    console.error('Erro ao obter usuário:', error);
+    return null;
+  }
 }

@@ -7,15 +7,16 @@ export const metadata: Metadata = {
   description: "Área de administração do cardapio digital da Rayolli Rotisserie",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <CheckLoggedInUser />
-      {children}
-    </div>
+    <CheckLoggedInUser>
+      <div>
+        {children}
+      </div>
+    </CheckLoggedInUser>
   );
 }
