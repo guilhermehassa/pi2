@@ -4,16 +4,22 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FiArrowLeft, FiEye } from 'react-icons/fi';
 import { OrderProps } from '@/utils/types/orders';
+import { UserProps, AddressProps } from '@/utils/types/users';
 import { orders } from '@/utils/data/orders';
+import { getUserById } from '@/utils/data/users';
 import { showInBrazilianValue } from '@/utils/functions/functions';
 
 import { db } from '@/services/firebaseConnection';
 import { doc, updateDoc } from 'firebase/firestore';
 
+interface PedidoComUsuario extends OrderProps {
+  userData?: UserProps;
+}
+
 export default function Pedidos() {
-  const [pedidos, setPedidos] = useState<OrderProps[]>([]);
+  const [pedidos, setPedidos] = useState<PedidoComUsuario[]>([]);
   const [modalDetalhes, setModalDetalhes] = useState(false);
-  const [pedidoSelecionado, setPedidoSelecionado] = useState<OrderProps | null>(null);
+  const [pedidoSelecionado, setPedidoSelecionado] = useState<PedidoComUsuario | null>(null);
 
   const calcularTotal = (pedido: OrderProps) => {
     const subtotal = pedido.items.reduce((acc, item) => acc + (item.value! * (item.quantity || 1)), 0);
@@ -30,11 +36,31 @@ export default function Pedidos() {
     });
   };
 
+  const formatarEndereco = (address: string | AddressProps): string => {
+    if (typeof address === 'string') return address;
+    return `${address.street}, ${address.number} - ${address.neighborhood}, ${address.city}/${address.state}`;
+  };
+
   // Busca pedidos ao montar o componente
   useEffect(() => {
     async function fetchOrders() {
       const fetchedOrders = await orders();
-      setPedidos(fetchedOrders);
+      
+      // Buscar dados dos usuários para cada pedido
+      const ordersWithUserData = await Promise.all(
+        fetchedOrders.map(async (order) => {
+          if (order.userId) {
+            const userData = await getUserById(order.userId);
+            return {
+              ...order,
+              userData: userData || undefined
+            } as PedidoComUsuario;
+          }
+          return order as PedidoComUsuario;
+        })
+      );
+
+      setPedidos(ordersWithUserData);
     }
 
     fetchOrders();
@@ -49,7 +75,7 @@ export default function Pedidos() {
     if (!confirm(`Deseja alterar o status do pedido para ${novoStatus}?`)) return;
 
     try {
-      await updateDoc(doc(db, "carts", pedidoId), {
+      await updateDoc(doc(db, "orders", pedidoId), {
         status: novoStatus
       });
 
@@ -84,7 +110,7 @@ export default function Pedidos() {
               <div className="space-y-4">
               <div>
                 <p className="font-semibold">Cliente:</p>
-                <p>{pedidoSelecionado.name}</p>
+                <p>{pedidoSelecionado.userData?.name || pedidoSelecionado.name}</p>
               </div>
               <div>
                 <p className="font-semibold">Telefone:</p>
@@ -100,7 +126,7 @@ export default function Pedidos() {
               </div>
               <div>
                 <p className="font-semibold">Endereço de Entrega:</p>
-                <p>{pedidoSelecionado.address}</p>
+                <p>{formatarEndereco(pedidoSelecionado.address)}</p>
               </div>
               <div>
                 <p className="font-semibold">Método de Entrega:</p>
@@ -185,7 +211,7 @@ export default function Pedidos() {
             {pedidos.map((pedido) => (
               <tr key={pedido.id} className="border-t border-gray-200 hover:bg-gray-50">
                 <td className="p-4">{formatarDataHora(pedido.createdAt)}</td>
-                <td className="p-4">{pedido.name}</td>
+                <td className="p-4">{pedido.userData?.name || pedido.name}</td>
                 <td className="p-4">
                   <select
                     value={pedido.status}

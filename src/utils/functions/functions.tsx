@@ -1,8 +1,26 @@
 import { ProductsProps } from "@/utils/types/products"; 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/services/firebaseConnection";
+import { AddressProps } from "@/utils/types/users";
 
 // GENERAL FUNCTIONS
+
+export function formatarEndereco(address: string | AddressProps): string {
+  if (typeof address === 'string') {
+    return address;
+  }
+  
+  const { street, number, complement, neighborhood, city, state } = address;
+  let enderecoFormatado = `${street}, ${number}`;
+  
+  if (complement) {
+    enderecoFormatado += ` - ${complement}`;
+  }
+  
+  enderecoFormatado += ` - ${neighborhood}, ${city}/${state}`;
+  
+  return enderecoFormatado;
+}
 
 export function showInBrazilianValue(value: number) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

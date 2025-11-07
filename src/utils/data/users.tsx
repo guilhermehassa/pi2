@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/services/firebaseConnection';
 import { UserProps, LoginFormData } from '@/utils/types/users';
 
@@ -54,6 +54,24 @@ export async function getLoggedInUser(): Promise<UserProps | null> {
     return JSON.parse(userStr) as UserProps;
   } catch (error) {
     console.error('Erro ao obter usuário:', error);
+    return null;
+  }
+}
+
+export async function getUserById(userId: string): Promise<UserProps | null> {
+  try {
+    const userRef = doc(db, 'usuarios', userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      return {
+        id: userSnap.id,
+        ...userSnap.data()
+      } as UserProps;
+    }
+    return null;
+  } catch (error) {
+    console.error('Erro ao buscar usuário:', error);
     return null;
   }
 }

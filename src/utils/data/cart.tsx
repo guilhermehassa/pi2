@@ -4,10 +4,18 @@ import { collection, query, orderBy, getDocs, addDoc } from 'firebase/firestore'
 
 export async function registerOrder(cart: CartProps) {
   
-  try{
+  try {
+    // Adiciona dados necessários ao pedido
     cart.createdAt = new Date().toISOString();
     cart.status = 'solicitado';
-    const addedCart = await addDoc(collection(db, 'carts'), cart);
+    
+    // Verifica se o userId foi enviado
+    if (!cart.userId) {
+      throw new Error('ID do usuário não fornecido');
+    }
+
+    // Salva o pedido no banco
+    const addedCart = await addDoc(collection(db, 'orders'), cart);
     return { Response: 'Success', cart: addedCart };
 
   } catch (error) {

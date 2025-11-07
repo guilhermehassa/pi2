@@ -174,6 +174,21 @@ export default function Cart() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Verifica se o usuário está logado
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      alert('Por favor, faça login para finalizar o pedido');
+      window.location.href = '/login';
+      return;
+    }
+
+    const userData = JSON.parse(userStr);
+    if (!userData.id) {
+      alert('Erro ao identificar usuário. Por favor, faça login novamente');
+      window.location.href = '/login';
+      return;
+    }
+
     try {
       const response = await fetch('/api/cart', {
         method: 'POST',
@@ -182,7 +197,8 @@ export default function Cart() {
         },
         body: JSON.stringify({ 
           ...formData, 
-          ...cart, 
+          ...cart,
+          userId: userData.id
         })
       });
 

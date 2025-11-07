@@ -11,4 +11,5 @@ export interface CartProps {
   expiresAt: number; 
   createdAt?: string;
   status?: 'solicitado' | 'produzindo' | 'em entrega' | 'finalizado';
+  userId?: string;
 }
