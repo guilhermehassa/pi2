@@ -108,7 +108,7 @@ export default function NavContainer() {
                   onClick={() => {
                     localStorage.removeItem('user');
                     setUser(null);
-                    router.push('/login');
+                    router.push('/home');
                   }}
                   className="
                     flex font-bold py-2 text-center items-center justify-center gap-2
