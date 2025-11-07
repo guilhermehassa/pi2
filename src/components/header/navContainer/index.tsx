@@ -81,7 +81,7 @@ export default function NavContainer() {
                 <>
                   <li>
                     <Link
-                      href="/perfil"
+                      href="/minhas-informacoes"
                       className="
                         flex font-bold py-2 text-center items-center justify-center gap-2
                         lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
