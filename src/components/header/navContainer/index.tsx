@@ -52,7 +52,7 @@ export default function NavContainer() {
       </button>
       <nav
         className={`
-          absolute z-40 transition-all duration-300 w-[100%] text-lg bg-neutral-300 text-red-900 p-5 pt-9 top-[-200px] left-0 shadow-md
+          absolute z-40 transition-all duration-300 w-[100%] text-lg bg-neutral-300 text-red-900 p-5 pt-9 top-[-300px] left-0 shadow-md
           lg:relative lg:top-[unset] lg:bg-transparent lg:p-0 lg:pt-0 lg:shadow-none
           ${menuOpen && 'top-[85px]'}
           `
@@ -111,7 +111,7 @@ export default function NavContainer() {
                     router.push('/home');
                   }}
                   className="
-                    flex font-bold py-2 text-center items-center justify-center gap-2
+                    w-full flex font-bold py-2 text-center items-center justify-center gap-2
                     lg:py-0 lg:transition-all lg:duration-300 lg:hover:text-neutral-900
                   ">
                   <FaSignOutAlt />
