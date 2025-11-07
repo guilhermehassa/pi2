@@ -2,24 +2,9 @@ import { useState } from 'react';
 import { db } from '@/services/firebaseConnection';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { formatPhone, formatCEP, fetchAddressByCEP } from '@/utils/functions/masks';
 
 export default function RegisterForm() {
-  const formatPhone = (value: string) => {
-    const phoneNumber = value.replace(/\D/g, '');
-    
-    if (phoneNumber.length <= 10) {
-      return phoneNumber
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{4})(\d)/, '$1-$2')
-        .replace(/(-\d{4})\d+?$/, '$1');
-    } else {
-      return phoneNumber
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{5})(\d)/, '$1-$2')
-        .replace(/(-\d{4})\d+?$/, '$1');
-    }
-  };
-
   const [formData, setFormData] = useState({
     name: '',
     user: '',
@@ -38,31 +23,42 @@ export default function RegisterForm() {
     const { name, value } = e.target;
     
     // Aplica a máscara se for o campo de telefone
-    const formattedValue = name === 'phone' ? formatPhone(value) : value;
-    
+    if (name === 'phone') {
+      setFormData(prev => ({
+        ...prev,
+        phone: formatPhone(value)
+      }));
+      return;
+    }
+
+    if (name === 'cep') {
+      const formattedCEP = formatCEP(value);
+      setFormData(prev => ({
+        ...prev,
+        cep: formattedCEP
+      }));
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: formattedValue
+      [name]: value
     }));
   };
 
   const handleCEPChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const cep = e.target.value.replace(/\D/g, '');
     if (cep.length === 8) {
-      try {
-        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await response.json();
-        if (!data.erro) {
-          setFormData(prev => ({
-            ...prev,
-            street: data.logradouro,
-            neighborhood: data.bairro,
-            city: data.localidade,
-            state: data.uf
-          }));
-        }
-      } catch (error) {
-        console.error('Erro ao buscar CEP:', error);
+      const addressData = await fetchAddressByCEP(cep);
+      if (addressData) {
+        setFormData(prev => ({
+          ...prev,
+          street: addressData.street,
+          neighborhood: addressData.neighborhood,
+          city: addressData.city,
+          state: addressData.state,
+          complement: addressData.complement || prev.complement
+        }));
       }
     }
   };

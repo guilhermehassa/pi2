@@ -8,13 +8,22 @@ import Image from 'next/image';
 import { SlSizeFullscreen } from 'react-icons/sl';
 import { showInBrazilianValue } from '@/utils/functions/functions';
 import { clearCart } from '@/utils/cart/cart';
+import { formatPhone, formatCEP, fetchAddressByCEP } from '@/utils/functions/masks';
 
 export default function Cart() {
   const { cart, cartTotal, addToCart, removeFromCart } = useCart();
   const [formData, setFormData] = useState({
     name: '',
-    address: '',
     phone: '',
+    address: {
+      cep: '',
+      street: '',
+      number: '',
+      complement: '',
+      neighborhood: '',
+      city: '',
+      state: ''
+    },
     deliveryMethod: {
       id: '',
       nome: "",
@@ -24,6 +33,28 @@ export default function Cart() {
     },
     observations: ''
   });
+
+  // Carregar dados do usuário logado
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const userData = JSON.parse(userStr);
+      setFormData(prev => ({
+        ...prev,
+        name: userData.name || '',
+        phone: userData.phone || '',
+        address: userData.address || {
+          cep: '',
+          street: '',
+          number: '',
+          complement: '',
+          neighborhood: '',
+          city: '',
+          state: ''
+        }
+      }));
+    }
+  }, []);
 
   const [fullImage, setFullImage] = useState<{ [productId: string]: boolean }>({});
   const [zIndexFullImage, setZIndexFullImage] = useState<{ [productId: string]: number }>({});
@@ -85,12 +116,59 @@ export default function Cart() {
   }, [cart.items]);
 
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name === 'phone') {
+      setFormData(prev => ({
+        ...prev,
+        phone: formatPhone(value)
+      }));
+      return;
+    }
+    
+    if (name === 'address.cep') {
+      const formattedCEP = formatCEP(value);
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          cep: formattedCEP
+        }
+      }));
+
+      // Se o CEP estiver completo e o usuário está preenchendo manualmente (não veio do login)
+      if (formattedCEP.replace(/\D/g, '').length === 8 && !localStorage.getItem('user')) {
+        const addressData = await fetchAddressByCEP(formattedCEP);
+        if (addressData) {
+          setFormData(prev => ({
+            ...prev,
+            address: {
+              ...prev.address,
+              ...addressData,
+              number: prev.address.number // Mantém o número se já foi digitado
+            }
+          }));
+        }
+      }
+      return;
+    }
+    
+    if (name.startsWith('address.')) {
+      const field = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [field]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -250,21 +328,6 @@ export default function Cart() {
             </div>
 
             <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                Endereço
-              </label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
-              />
-            </div>
-
-            <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                 Telefone
               </label>
@@ -277,6 +340,112 @@ export default function Cart() {
                 required
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
               />
+            </div>
+
+            <div>
+              <label htmlFor="cep" className="block text-sm font-medium text-gray-700">
+                CEP
+              </label>
+              <input
+                type="text"
+                id="cep"
+                name="address.cep"
+                value={formData.address.cep}
+                onChange={handleInputChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="street" className="block text-sm font-medium text-gray-700">
+                Rua
+              </label>
+              <input
+                type="text"
+                id="street"
+                name="address.street"
+                value={formData.address.street}
+                onChange={handleInputChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="number" className="block text-sm font-medium text-gray-700">
+                  Número
+                </label>
+                <input
+                  type="text"
+                  id="number"
+                  name="address.number"
+                  value={formData.address.number}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
+                />
+              </div>
+              <div>
+                <label htmlFor="complement" className="block text-sm font-medium text-gray-700">
+                  Complemento
+                </label>
+                <input
+                  type="text"
+                  id="complement"
+                  name="address.complement"
+                  value={formData.address.complement}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="neighborhood" className="block text-sm font-medium text-gray-700">
+                Bairro
+              </label>
+              <input
+                type="text"
+                id="neighborhood"
+                name="address.neighborhood"
+                value={formData.address.neighborhood}
+                onChange={handleInputChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                  Cidade
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  name="address.city"
+                  value={formData.address.city}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
+                />
+              </div>
+              <div>
+                <label htmlFor="state" className="block text-sm font-medium text-gray-700">
+                  Estado
+                </label>
+                <input
+                  type="text"
+                  id="state"
+                  name="address.state"
+                  value={formData.address.state}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1"
+                />
+              </div>
             </div>
 
             <div>

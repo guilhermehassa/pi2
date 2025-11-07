@@ -22,7 +22,17 @@ export async function authenticateUser({ user, password }: LoginFormData): Promi
       id: snapshot.docs[0].id,
       name: userData.name,
       user: userData.user,
-      role: userData.role
+      role: userData.role,
+      phone: userData.phone || '',
+      address: userData.address || {
+        cep: '',
+        street: '',
+        number: '',
+        complement: '',
+        neighborhood: '',
+        city: '',
+        state: ''
+      }
     };
   } catch (error) {
     console.error('Erro ao autenticar usuário:', error);
