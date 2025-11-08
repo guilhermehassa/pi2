@@ -8,10 +8,12 @@ import { SlSizeFullscreen } from "react-icons/sl"
 import { MdOutlineFormatListBulleted  } from "react-icons/md"
 import { ProductsProps } from "@/utils/types/products";
 import { showInBrazilianValue, getCheaperVariation } from "@/utils/functions/functions";
+import { ImageModal } from "../modals/ImageModal";
+import { VariationsModal } from "../modals/VariationsModal";
 
 import { useCart } from "@/contexts/CartContext"; 
 
-export default function itemsList() {
+export default function ItemsList() {
   const { cart, addToCart, removeFromCart, addVariationToCart, removeVariationFromCart } = useCart();
 
   const [categories, setCategories] = useState<{ id: string; name: any; order: any }[]>([]);
@@ -29,63 +31,56 @@ export default function itemsList() {
     fetchData();
   }, []);
 
-  const [openVariations, setOpenVariations] = useState<{ [productId: string]: boolean }>({});
-  const [fullImage, setFullImage] = useState<{ [productId: string]: boolean }>({});
-  const [zIndexVariations, setZIndexVariations] = useState<{ [productId: string]: number }>({});
-  const [zIndexFullImage, setZIndexFullImage] = useState<{ [productId: string]: number }>({});
+  const [selectedProduct, setSelectedProduct] = useState<ProductsProps | null>(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isVariationsModalOpen, setIsVariationsModalOpen] = useState(false);
 
-  const toggleVariations = (productId: string) => {
-
-    if(zIndexVariations[productId] === 101){
-      setTimeout(() => {
-        setZIndexVariations(prev => ({
-          ...prev,
-          [productId]: -1
-        }));
-      }, 350);
-    }else{
-      setZIndexVariations(prev => ({
-        ...prev,
-        [productId]: 101
-      }));
-    }
-    
-    setTimeout(() => {
-      setOpenVariations(prev => ({
-        ...prev,
-        [productId]: !prev[productId]
-      }));
-    }, 100);
+  const handleOpenImageModal = (product: ProductsProps) => {
+    setSelectedProduct(product);
+    setIsImageModalOpen(true);
   };
 
-  const toggleImage = (productId: string) => {
-    if (fullImage[productId]) {
-      setFullImage(prev => ({
-        ...prev,
-        [productId]: false
-      }));
-      setTimeout(() => {
-        setZIndexFullImage(prev => ({
-          ...prev,
-          [productId]: -1
-        }));
-      }, 350);
-    } else {
-      setZIndexFullImage(prev => ({
-        ...prev,
-        [productId]: 101
-      }));
-      setTimeout(() => {
-        setFullImage(prev => ({
-          ...prev,
-          [productId]: true
-        }));
-      }, 100);
-    }
+  const handleCloseImageModal = () => {
+    setIsImageModalOpen(false);
+    setTimeout(() => setSelectedProduct(null), 300);
+  };
+
+  const handleOpenVariationsModal = (product: ProductsProps) => {
+    setSelectedProduct(product);
+    setIsVariationsModalOpen(true);
+  };
+
+  const handleCloseVariationsModal = () => {
+    setIsVariationsModalOpen(false);
+    setTimeout(() => setSelectedProduct(null), 300);
+  };
+
+  const getVariationQuantity = (productId: string, variationId: number) => {
+    return cart.items.find(
+      cartItem => 
+        String(cartItem.id) === `${productId} - ${String(variationId)}` && 
+        cartItem.type === 'variation'
+    )?.quantity || 0;
   };
 
   return (
     <div className="container mx-auto px-3 my-10 overflow-hidden">
+      <ImageModal 
+        isOpen={isImageModalOpen}
+        onClose={handleCloseImageModal}
+        imageUrl={selectedProduct?.imageUrl}
+        productName={selectedProduct?.name || ''}
+      />
+
+      <VariationsModal
+        isOpen={isVariationsModalOpen}
+        onClose={handleCloseVariationsModal}
+        product={selectedProduct || undefined}
+        onAddVariation={(product, variationId) => addVariationToCart({ ...product, quantity: 1 }, variationId)}
+        onRemoveVariation={removeVariationFromCart}
+        getVariationQuantity={getVariationQuantity}
+      />
+
       <div className="flex justify-between items-center flex-col">
         {[...categories]
           .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
@@ -103,57 +98,29 @@ export default function itemsList() {
                     >
                     <div
                       className="relative w-4/12 p-3 aspect-square cursor-pointer"
-                      onClick={() => toggleImage(product.id)}
-                      >
+                      onClick={() => handleOpenImageModal(product)}
+                    >
                       {product.imageUrl ? (
                         <>
                           <Image
                             width="500"
                             height="500"
-                            unoptimized={true}
                             src={product.imageUrl}
                             alt={product.name}
+                            quality={50}
+                            loading="lazy"
                             className="object-cover rounded-md h-full object-center"
                           />
                           <SlSizeFullscreen
                             size={24}
                             className="absolute bottom-3 right-3 text-white bg-amber-900 rounded-md p-1 cursor-pointer shadow-md"
                           />
-
-                          <div
-                            className="fixed top-0 left-0 flex w-full h-full justify-center items-center transition-opacity duration-300 "
-                            style={{
-                              background: 'rgba(0, 0, 0, 0.6)',
-                              backdropFilter: 'blur(2px)',
-                              opacity: fullImage[product.id] ? 1 : 0,
-                              zIndex: zIndexFullImage[product.id] ?? -1
-                            }}
-                            >
-                              <div className="container  m-3">
-                                <button
-                                  className="fixed z-40 top-3 right-3 text-white rounded-md aspect-square w-12 bg-red-500 hover:bg-red-800 transition-all flex justify-center items-center"
-                                  onClick={() => toggleImage(product.id)}
-                                  >
-                                  X
-                                </button>
-                                <div className="relative w-full h-screen">
-                                  <Image
-                                    fill={true}
-                                    unoptimized={true}
-                                    src={product.imageUrl}
-                                    alt={product.name}
-                                    className="object-contain"
-                                  />
-                                </div>
-                              </div>
-                          </div>
                         </>  
                       ) : (
                         <div className="flex justify-center items-center w-full h-full bg-neutral-200 rounded-md">
                           <span className="text-gray-500">Sem imagem</span>
                         </div>
                       )}
-  
                     </div>
                     <div
                       className="py-3 pr-3 w-8/12 flex flex-col justify-between align-middle gap-3 relative"
@@ -172,79 +139,11 @@ export default function itemsList() {
 
                           <button
                             className="px-3 py-2 bg-amber-900 text-white font-bold rounded-md shadow-md hover:bg-amber-800 transition-colors flex items-center"
-                            onClick={() => toggleVariations(product.id)}
-                            >
+                            onClick={() => handleOpenVariationsModal(product)}
+                          >
                             <MdOutlineFormatListBulleted size={16} className="inline mr-1" />
                             {product.variationPluralName}
                           </button>
-
-                          <div
-                            className="fixed top-0 left-0 flex w-full h-full justify-center items-center transition-opacity duration-300 "
-                            style={{
-                              background: 'rgba(0, 0, 0, 0.3)',
-                              backdropFilter: 'blur(2px)',
-                              opacity: openVariations[product.id] ? 1 : 0,
-                              zIndex: zIndexVariations[product.id] ?? -1
-                            }}
-                            >
-                              <div className="container m-3 bg-neutral-100 p-3 rounded-md shadow-lg relative">
-                                <button
-                                  className="absolute top-0 right-0 text-white rounded-tr-md rounded-bl-md aspect-square w-12 bg-red-800 hover:bg-red-500 transition-all flex justify-center items-center"
-                                  onClick={() => toggleVariations(product.id)}
-                                  >
-                                  X
-                                </button>
-                                <h3 className="text-xl font-bold mb-3 text-amber-900">
-                                  <span className="">{product.variationPluralName}</span>
-                                </h3>
-                                {product.variations!.map(variation => (
-                                  <div key={variation.id} className="flex justify-between items-center not-last-of-type:border-b border-neutral-300 p-2">
-                                    <div className="flex items-center gap-3">
-                                      {variation.image && (
-                                        <div className="relative h-16 w-16">
-                                          <Image
-                                            fill={true}
-                                            unoptimized={true}
-                                            src={variation.image}
-                                            alt={variation.name}
-                                            className="object-cover rounded-md"
-                                          />
-                                        </div>
-                                      )}
-                                      <span className="font-semibold">{variation.name}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <span className="font-bold">{showInBrazilianValue(variation.value)}</span>
-                                      <div
-                                        className="flex gap-1 border border-amber-900 rounded-md overflow-hidden"
-                                        >
-                                        <button
-                                          className="flex items-center text-white font-bold justify-center w-9 bg-amber-900"
-                                          onClick={() => (removeVariationFromCart(product, variation.id))}
-                                          >
-                                          -
-                                        </button>
-                                        <input
-                                          type="text"
-                                          value={
-                                            cart.items.find(cartItem => String(cartItem.id) === (`${product.id} - ${String(variation.id)}`) && cartItem.type == 'variation')?.quantity || 0
-                                          }
-                                          disabled
-                                          className="w-8 text-center"
-                                        />
-                                        <button
-                                          className="flex items-center text-white font-bold justify-center w-9 py-2 bg-amber-900"
-                                          onClick={() => addVariationToCart({ ...product, quantity: 1 }, variation.id)}
-                                          >
-                                          <IoMdAdd size={18}/>
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-
-                          </div>
                         </>
                       ) : (
                         <>
